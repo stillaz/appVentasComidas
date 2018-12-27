@@ -1,5 +1,7 @@
 {
   "name": "appVentas",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
