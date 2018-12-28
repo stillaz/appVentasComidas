@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { isNumber } from 'util';
 
 @Pipe({
   name: 'udpCurrency'
@@ -6,10 +7,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class UdpCurrencyPipe implements PipeTransform {
 
   transform(value: any): any {
-    if (!value) {
+    if (value === undefined) {
       return null;
     }
-    const res = parseInt(value.replace(/[^\d]/g, ""));
+    const res = isNumber(value) ? value : parseInt(value.replace(/[^\d]/g, ""));
     if (!isNaN(res)) {
       return res.toLocaleString('en-US', {
         style: 'currency',

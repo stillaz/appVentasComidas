@@ -1,6 +1,7 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Datos del producto {{producto.nombre}}</ion-title>
+    <ion-title *ngIf="!producto">Datos del producto</ion-title>
+    <ion-title *ngIf="producto">Datos de {{producto.nombre}}</ion-title>
 
     <ion-buttons slot="primary">
       <ion-button (click)="salir()">
@@ -11,12 +12,12 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-card>
+  <ion-card *ngIf="todo && todo.controls">
     <ion-card-content>
       <form [formGroup]="todo">
         <ion-item>
           <ion-label position="stacked">Código:</ion-label>
-          <ion-input type="text" formControlName="id" [disabled]="id" (ionChanged)="updateFilePath()"></ion-input>
+          <ion-input required type="text" formControlName="id" [disabled]="id" (ionChange)="updateFilePath()"></ion-input>
         </ion-item>
 
         <div *ngIf="todo.controls.id.errors && todo.controls.id.touched">
@@ -31,34 +32,25 @@
 
         <ion-item>
           <ion-label position="stacked">Producto:</ion-label>
-          <ion-input type="text" formControlName="nombre" maxlength="30"></ion-input>
+          <ion-input required type="text" formControlName="nombre" maxlength="30"></ion-input>
         </ion-item>
 
         <ion-item color="danger" *ngIf="todo.controls.nombre.errors && todo.controls.nombre.touched">
-          <p>El nombre del producto no es válida</p>
+          <p>El nombre del producto no es válido</p>
         </ion-item>
 
         <ion-item>
           <ion-label position="stacked">Descripción:</ion-label>
-          <ion-textarea type="text" formControlName="descripcion" maxlength="1000"></ion-textarea>
+          <ion-textarea required type="text" formControlName="descripcion" maxlength="1000"></ion-textarea>
         </ion-item>
 
         <ion-item color="danger" *ngIf="todo.controls.descripcion.errors && todo.controls.descripcion.touched">
           <p>La descripción del producto no es válida</p>
         </ion-item>
 
-        <ion-item (click)="marcas()">
-          <ion-label position="stacked">Marca:</ion-label>
-          <ion-input type="text" readOnly="true" formControlName="marca" value="{{marca}}"></ion-input>
-        </ion-item>
-
-        <ion-item color="danger" *ngIf="todo.controls.marca.errors && todo.controls.marca.touched">
-          <p>La marca del producto no es válida</p>
-        </ion-item>
-
         <ion-item>
           <ion-label position="stacked">Grupo:</ion-label>
-          <ion-select formControlName="grupo" interface="popover">
+          <ion-select required formControlName="grupo" interface="popover">
             <ion-select-option *ngFor="let grupo of grupos" [value]="grupo">{{grupo.nombre}}</ion-select-option>
           </ion-select>
         </ion-item>
@@ -68,13 +60,8 @@
         </ion-item>
 
         <ion-item>
-          <ion-label position="stacked">Alerta:</ion-label>
-          <ion-input type="number" formControlName="alerta"></ion-input>
-        </ion-item>
-
-        <ion-item>
           <ion-label position="stacked">Precio:</ion-label>
-          <input inputmode="numeric" type="text" [value]="todo.get('precio').value | udpCurrency" formControlName="precio"
+          <input required inputmode="numeric" type="text" [value]="todo.get('precio').value | udpCurrency" formControlName="precio"
             placeholder="$ 0">
         </ion-item>
 
@@ -82,11 +69,11 @@
           <p>El precio del producto no es válido</p>
         </ion-item>
 
-        <ion-item style="text-align: center" *ngIf="todo.controls.imagen.value">
-          <img [src]="todo.controls.imagen.value" style="max-width:300px;" />
+        <ion-item *ngIf="todo.controls.imagen.value">
+          <img [src]="todo.controls.imagen.value" style="max-width:300px; margin: 0 auto" />
         </ion-item>
 
-        <ion-item *ngIf="!mobile">
+        <ion-item *ngIf="!mobile && todo.controls.id.value">
           <label class="item item-input"> <input type="file" id="upimgfile" name="uploadfile" (change)="seleccionarImagen($event)">
           </label>
         </ion-item>
@@ -111,7 +98,7 @@
           </ion-fab>
         </ion-item>
 
-        <ion-button type="submit" icon-right full large color="secondary" [disabled]="!todo.valid" (click)="guardar()">Guardar
+        <ion-button type="submit" icon-right full large color="secondary" [disabled]="todo.invalid" (click)="guardar()">Guardar
           <ion-icon name="checkmark"></ion-icon>
         </ion-button>
 

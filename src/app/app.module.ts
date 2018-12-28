@@ -12,7 +12,6 @@ import { FirebaseConfig } from './config-firebase';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { DetalleProductoPageModule } from './detalle-producto/detalle-producto.module';
-import { MarcaPageModule } from './marca/marca.module';
 import { PipesModule } from './pipes.module';
 import { Camera } from '@ionic-native/camera/ngx';
 import { AngularFireStorageModule } from '@angular/fire/storage';
@@ -29,7 +28,6 @@ import { File } from '@ionic-native/file/ngx';
     AngularFirestoreModule.enablePersistence(),
     AngularFireStorageModule,
     DetalleProductoPageModule,
-    MarcaPageModule,
     PipesModule
   ],
   providers: [

@@ -1,15 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
-import { NavParams, ToastController, AlertController, ModalController } from '@ionic/angular';
+import { NavParams, ToastController, AlertController, ModalController, LoadingController } from '@ionic/angular';
 import { ProductoOptions } from '../producto-options';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
 import { GrupoOptions } from '../grupo-options';
-import { MarcaPage } from '../marca/marca.page';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { AngularFireStorage } from '@angular/fire/storage';
 import * as firebase from 'firebase';
 import { finalize } from 'rxjs/operators';
+import { isNumber } from 'util';
 
 @Component({
   selector: 'app-detalle-producto',
@@ -24,7 +23,6 @@ export class DetalleProductoPage implements OnInit {
   private productoCollection: AngularFirestoreCollection;
   private productoDoc: AngularFirestoreDocument<ProductoOptions>;
   public grupos: GrupoOptions[];
-  public marca: string;
   private filePathData: string;
 
   constructor(
@@ -36,6 +34,7 @@ export class DetalleProductoPage implements OnInit {
     public alertCtrl: AlertController,
     private camera: Camera,
     private storage: AngularFireStorage,
+    public loadingCtrl: LoadingController
   ) { }
 
   ngOnInit() {
@@ -46,7 +45,7 @@ export class DetalleProductoPage implements OnInit {
   }
 
   private updateGrupos() {
-    const grupoCollection = this.af.collection<GrupoOptions>('grupos');
+    const grupoCollection = this.af.collection<GrupoOptions>('grupos', ref => ref.orderBy('nombre'));
     grupoCollection.valueChanges().subscribe(grupos => {
       this.grupos = grupos;
     });
@@ -70,69 +69,49 @@ export class DetalleProductoPage implements OnInit {
       id: [this.producto.id, Validators.required, this.valorUnico()],
       nombre: [this.producto.nombre, Validators.required],
       descripcion: [this.producto.descripcion, Validators.required],
-      marca: [this.producto.marca, Validators.required],
       grupo: [this.producto.grupo, Validators.required],
-      alerta: [this.producto.alerta],
       precio: [this.producto.precio, Validators.required],
       imagen: [this.producto.imagen],
-      cantidad: [this.producto.cantidad || 0],
-      activo: [this.producto.activo]
+      activo: [this.producto.activo || true]
     });
   }
 
   private valorUnico(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } => {
       if (Validators.required(control)) return null;
-      return new Observable((observer) => {
+      return new Promise(resolve => {
         if (!this.id) {
           const id: string = control.value;
-
           const productoDoc = this.productoCollection.doc(id);
+
           productoDoc.get().subscribe(data => {
             if (data.exists) {
-              observer.next({ valorUnico: true });
+              resolve({ valorUnico: true });
             } else {
-              observer.next(null);
+              resolve(null);
             }
           });
         } else {
-          observer.next(null);
+          resolve(null);
         }
-
-        observer.complete();
       });
     }
   }
 
-  async marcas() {
-    const modal = await this.modalCtrl.create({
-      component: MarcaPage,
-      componentProps: { data: true }
-    });
-
-    modal.onDidDismiss().then(select => {
-      const data = select.data;
-      if (data) {
-        this.marca = data.marca.nombre;
-        this.todo.patchValue({ 'marca': data.marca });
-      }
-    });
-
-    await modal.present();
-  }
-
   public guardar() {
+    const precioForm = this.todo.value.precio;
+    const precio = !isNumber(precioForm) ? parseInt(precioForm.replace(/[^\d]/g, "")) : precioForm;
     const producto: ProductoOptions = this.todo.value;
+    producto.precio = precio;
+    this.presentLoading();
     if (this.id) {
       this.productoDoc.update({
         nombre: producto.nombre,
         descripcion: producto.descripcion,
-        marca: producto.marca,
         imagen: producto.imagen,
         grupo: producto.grupo,
         precio: producto.precio,
-        activo: producto.activo,
-        alerta: producto.alerta
+        activo: producto.activo
       }).then(() => {
         this.presentToast('El producto ha sido actualizado');
       }).catch(err => {
@@ -168,11 +147,6 @@ export class DetalleProductoPage implements OnInit {
     });
 
     alert.present();
-  }
-
-  public currencyInputChanged(value: any) {
-    var num = value.replace(/[$,]/g, "");
-    return Number(num);
   }
 
   public sacarFoto() {
@@ -220,7 +194,6 @@ export class DetalleProductoPage implements OnInit {
 
   public seleccionarImagen(event: any) {
     const imagen = event.target.files[0];
-    console.log(imagen);
     const fileRef = this.storage.ref(this.filePathData);
     const task = this.storage.upload(this.filePathData, imagen);
     task.snapshotChanges().pipe(
@@ -235,6 +208,15 @@ export class DetalleProductoPage implements OnInit {
   public updateFilePath() {
     const id = this.todo.value.id;
     this.filePathData = id ? 'productos/' + id : null;
+    this.productoDoc = this.af.doc(this.filePathData);
+  }
+
+  async presentLoading() {
+    const loadingElement = await this.loadingCtrl.create({
+      message: 'Procesando...',
+      spinner: 'crescent',
+    });
+    return await loadingElement.present();
   }
 
 }

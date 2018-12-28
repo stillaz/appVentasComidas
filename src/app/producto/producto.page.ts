@@ -24,7 +24,6 @@ export class ProductoPage implements OnInit {
   public grupos: GrupoOptions[];
 
   pages: any[] = [
-    { title: 'Productos en alerta', component: 'ListaProductosAlertaPage', icon: 'alert' },
     { title: 'Productos más vendidos', component: '', icon: 'trending-up' },
     { title: 'Productos menos vendidos', component: '', icon: 'trending-down' },
     { title: 'Histórico inventario', component: '', icon: 'list-box' }
@@ -59,10 +58,6 @@ export class ProductoPage implements OnInit {
       this.productos = productos;
       if (productos[0]) {
         this.updateGruposProductos();
-        if (this.mensaje) {
-          this.updateProductosAlerta();
-          this.mensaje = false;
-        }
       }
     });
   }
@@ -79,20 +74,9 @@ export class ProductoPage implements OnInit {
     });
 
     for (let grupo in grupos) {
-      this.gruposProducto.push({ grupo: grupo, servicios: grupos[grupo] });
+      const dataGrupo = this.grupos.find(todos => todos.id === grupo);
+      this.gruposProducto.push({ grupo: dataGrupo, productos: grupos[grupo] });
     }
-  }
-
-  async updateProductosAlerta() {
-    const productosAlerta = this.productos.filter(producto => producto.alerta <= producto.cantidad).length;
-    this.pages[0].badge = productosAlerta;
-    const alert = await this.alertCtrl.create({
-      header: 'Alerta',
-      message: 'Tienes productos a punto de acabarse',
-      buttons: ['OK']
-    });
-
-    await alert.present();
   }
 
   async ver(idproducto: string) {
