@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController, ModalController, PopoverController, ActionSheetController, AlertController } from '@ionic/angular';
 import { ProductoOptions } from '../producto-options';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { DetalleProductoPage } from '../detalle-producto/detalle-producto.page';
 import { DetallePrecioProductoPage } from '../detalle-precio-producto/detalle-precio-producto.page';
 import { GrupoOptions } from '../grupo-options';
@@ -22,6 +22,7 @@ export class ProductoPage implements OnInit {
   public mensaje = true;
   public productos: ProductoOptions[];
   public grupos: GrupoOptions[];
+  public agrupar: boolean;
 
   pages: any[] = [
     { title: 'Productos más vendidos', component: '', icon: 'trending-up' },
@@ -48,17 +49,27 @@ export class ProductoPage implements OnInit {
     const grupoCollection = this.af.collection<GrupoOptions>('grupos');
     grupoCollection.valueChanges().subscribe(grupos => {
       this.grupos = grupos;
-      this.updateProductos();
     });
   }
 
-  private updateProductos() {
-    const productoCollection = this.af.collection<ProductoOptions>('productos');
+  public updateProductosGrupo(event: any) {
+    const seleccionado = event.detail.value;
+    let productoCollection: AngularFirestoreCollection<ProductoOptions>;
+    if (seleccionado == "0") {
+      productoCollection = this.af.collection('productos');
+      this.agrupar = true;
+    } else {
+      productoCollection = this.af.collection('productos', ref => ref.where('grupo.id', "==", seleccionado));
+      this.agrupar = false;
+    }
+
+    this.updateProductos(productoCollection);
+  }
+
+  private updateProductos(productoCollection: AngularFirestoreCollection<ProductoOptions>) {
     productoCollection.valueChanges().subscribe(productos => {
       this.productos = productos;
-      if (productos[0]) {
-        this.updateGruposProductos();
-      }
+      this.updateGruposProductos();
     });
   }
 
@@ -87,29 +98,9 @@ export class ProductoPage implements OnInit {
     await modal.present();
   }
 
-  /*filtrar() {
-    if (this.busqueda) {
-      this.producto.getProductosFiltrado(this.busqueda, 'descripcion').then((productos) => {
-        this.productos = productos;
-      });
-    } else {
-      this.getProductos();
-    }
-  }
-
   openPage(page: any) {
     this.navCtrl.navigateForward(page.component);
   }
-
-  /*menu(myEvent) {
-    let popover = this.popoverCtrl.create('MenuProductosPage');
-    popover.onDidDismiss(data => {
-      this.getProductos();
-    });
-    popover.present({
-      ev: myEvent
-    });
-  }*/
 
   async verPrecio(idproducto: string) {
     const modal = await this.modalCtrl.create({
@@ -118,72 +109,5 @@ export class ProductoPage implements OnInit {
     });
     await modal.present();
   }
-
-  /*filtrosGrupos() {
-    const filtros: any = [];
-    filtros.push({
-      text: 'Todos los grupos', handler: () => {
-        this.filtro = null;
-        this.gruposeleccion = 'Todos los grupos';
-        this.marcaseleccion = 'Todas las marcas';
-      }
-    });
-
-    this.grupos.forEach(grupo => {
-      filtros.push({
-        text: grupo, handler: () => {
-          this.filtro = 'grupo';
-          this.producto.getProductosFiltrado(grupo, this.filtro).then((productos) => {
-            this.productos = productos;
-          });
-          this.gruposeleccion = grupo;
-          this.marcaseleccion = 'Todas las marcas';
-        }
-      });
-    });
-
-    let actionSheet = this.actionSheetCtrl.create({
-      title: 'Grupos',
-      buttons: filtros,
-      cssClass: 'actionSheet1'
-    });
-    actionSheet.present();
-  }
-
-  filtrosMarcas() {
-    let filtros: any = [];
-    filtros.push({
-      text: 'Todas las marcas', handler: () => {
-        this.getProductos();
-        this.filtro = null;
-        this.marcaseleccion = 'Todas las marcas';
-        this.gruposeleccion = 'Todos los grupos';
-      }
-    });
-
-    this.producto.getMarcas().then(marcas => {
-      for (let marca of marcas) {
-        filtros.push({
-          text: marca, handler: () => {
-            this.filtro = 'marca';
-            this.producto.getProductosFiltrado(marca, this.filtro).then((productos) => {
-              this.productos = productos;
-            });
-            this.marcaseleccion = marca;
-            this.gruposeleccion = 'Todos los grupos';
-          }
-        });
-      }
-      let actionSheet = this.actionSheetCtrl.create({
-        title: 'Marcas',
-        buttons: filtros
-      });
-      actionSheet.present();
-    });
-  }
-
-  irAlertas() {
-    this.navCtrl.push('ListaProductosAlertaPage');
-  }*/
 
 }

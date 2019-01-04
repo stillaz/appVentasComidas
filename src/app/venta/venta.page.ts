@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-venta',
@@ -7,9 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class VentaPage implements OnInit {
 
-  constructor() { }
+  constructor(public navCtrl: NavController) { }
 
   ngOnInit() {
+  }
+
+  public venta() {
+    this.navCtrl.navigateForward('detalle-venta');
   }
 
 }

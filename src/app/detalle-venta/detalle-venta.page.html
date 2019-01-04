@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Nueva venta</ion-title>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-segment (ionChange)="updateProductosGrupo($event)">
+      <ion-segment-button [value]="0" checked>
+        Todos
+      </ion-segment-button>
+      <ion-segment-button *ngFor="let grupo of grupos" [value]="grupo.id">
+        {{grupo.nombre}}
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="10" style="height: 550px; overflow: scroll; padding: 0;">
+        <ion-list *ngFor="let grupo of gruposProducto">
+          <ion-item-group>
+            <ion-item-divider *ngIf="agrupar" sticky>
+              <ion-label>{{grupo.grupo.nombre}}</ion-label>
+            </ion-item-divider>
+
+            <ion-grid>
+              <ion-row>
+                <ion-col size="3" *ngFor="let producto of grupo.productos">
+                  <ion-card style="margin: 0px;" (click)="ver(producto.id)">
+                    <ion-card-header text-wrap>
+                      {{producto.nombre}}
+                    </ion-card-header>
+                    <ion-card-content style="text-align: right; padding: 0;">
+                      <img [src]="producto.imagen">
+                      <strong style="margin-right: 10px;">{{producto.precio | currency : USD: symbol: '4.0' }}</strong>
+                    </ion-card-content>
+                  </ion-card>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-item-group>
+        </ion-list>
+      </ion-col>
+
+      <ion-col size="2">
+        <ion-list>
+          <ion-list-header>
+            <ion-label>Venta N° </ion-label>
+          </ion-list-header>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

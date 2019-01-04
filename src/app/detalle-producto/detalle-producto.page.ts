@@ -24,6 +24,7 @@ export class DetalleProductoPage implements OnInit {
   private productoDoc: AngularFirestoreDocument<ProductoOptions>;
   public grupos: GrupoOptions[];
   private filePathData: string;
+  public loading: any;
 
   constructor(
     public navParams: NavParams,
@@ -114,14 +115,18 @@ export class DetalleProductoPage implements OnInit {
         activo: producto.activo
       }).then(() => {
         this.presentToast('El producto ha sido actualizado');
+        this.loading.dismiss();
       }).catch(err => {
         this.presentAlertError(err, 'actualizar');
+        this.loading.dismiss();
       });
     } else {
       this.productoDoc.set(producto).then(() => {
         this.presentToast('El producto ha sido registrado');
+        this.loading.dismiss();
       }).catch(err => {
         this.presentAlertError(err, 'registrar');
+        this.loading.dismiss();
       });;
     }
   }
@@ -212,11 +217,21 @@ export class DetalleProductoPage implements OnInit {
   }
 
   async presentLoading() {
-    const loadingElement = await this.loadingCtrl.create({
+    this.loading = await this.loadingCtrl.create({
       message: 'Procesando...',
       spinner: 'crescent',
     });
-    return await loadingElement.present();
+    return await this.loading.present();
+  }
+
+  async presentLoadingTrasnparent() {
+    this.loading = await this.loadingCtrl.create({
+      message: 'Procesando...',
+      spinner: 'crescent',
+      translucent: true,
+      showBackdrop: true
+    });
+    return await this.loading.present();
   }
 
 }

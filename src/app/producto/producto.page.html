@@ -2,12 +2,23 @@
   <ion-toolbar>
     <ion-title>Productos</ion-title>
   </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-segment (ionChange)="updateProductosGrupo($event)">
+      <ion-segment-button [value]="0" checked>
+        Todos
+      </ion-segment-button>
+      <ion-segment-button *ngFor="let grupo of grupos" [value]="grupo.id">
+        {{grupo.nombre}}
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <ion-list *ngFor="let grupo of gruposProducto">
     <ion-item-group>
-      <ion-item-divider sticky>
+      <ion-item-divider *ngIf="agrupar" sticky>
         <ion-label>{{grupo.grupo.nombre}}</ion-label>
       </ion-item-divider>
 
@@ -27,7 +38,6 @@
         </ion-row>
       </ion-grid>
     </ion-item-group>
-
   </ion-list>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
