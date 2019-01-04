@@ -15,20 +15,20 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content no-padding>
   <ion-grid>
     <ion-row>
-      <ion-col size="10" style="height: 550px; overflow: scroll; padding: 0;">
-        <ion-list *ngFor="let grupo of gruposProducto">
+      <ion-col size="9" style="height: 550px; overflow: scroll; padding: 0;">
+        <ion-list style="padding: 0px;" *ngFor="let grupo of gruposProducto">
           <ion-item-group>
             <ion-item-divider *ngIf="agrupar" sticky>
               <ion-label>{{grupo.grupo.nombre}}</ion-label>
             </ion-item-divider>
 
-            <ion-grid>
+            <ion-grid style="padding-top: 0px;">
               <ion-row>
                 <ion-col size="3" *ngFor="let producto of grupo.productos">
-                  <ion-card style="margin: 0px;" (click)="ver(producto.id)">
+                  <ion-card style="margin: 0px;" (click)="agregar(producto)">
                     <ion-card-header text-wrap>
                       {{producto.nombre}}
                     </ion-card-header>
@@ -44,12 +44,32 @@
         </ion-list>
       </ion-col>
 
-      <ion-col size="2">
-        <ion-list>
+      <ion-col size="3">
+        <ion-list style="height: 450px;">
           <ion-list-header>
-            <ion-label>Venta N° </ion-label>
+            <strong>Venta N° </strong>
+            <strong style="color: #ff0000">Total: {{factura.total | currency : USD: symbol: '4.0'}}</strong>
           </ion-list-header>
+
+          <ion-grid>
+            <ion-row *ngFor="let item of factura.detalle">
+              <ion-col size="1">
+                <ion-label>{{item.cantidad}}</ion-label>
+              </ion-col>
+
+              <ion-col size="8">
+                <ion-label>{{item.producto.nombre}}</ion-label>
+              </ion-col>
+
+              <ion-col size="3">
+                <ion-label>{{item.subtotal | currency : USD: symbol: '4.0'}}</ion-label>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
         </ion-list>
+
+        <ion-button [disabled]="!factura.detalle[0]" expand="block" color="secondary">Finalizar</ion-button>
+        <ion-button expand="block" color="danger">Cancelar</ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>

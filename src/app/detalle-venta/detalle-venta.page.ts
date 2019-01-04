@@ -14,6 +14,13 @@ export class DetalleVentaPage implements OnInit {
   public agrupar: boolean;
   private productos: ProductoOptions[];
   public gruposProducto: any;
+  public factura = {
+    detalle: [] as any,
+    devuelve: null,
+    id: null,
+    pago: null,
+    total: 0
+  };
 
   constructor(
     private angularFirestore: AngularFirestore
@@ -66,6 +73,19 @@ export class DetalleVentaPage implements OnInit {
       const dataGrupo = this.grupos.find(todos => todos.id === grupo);
       this.gruposProducto.push({ grupo: dataGrupo, productos: grupos[grupo] });
     }
+  }
+
+  public agregar(producto: ProductoOptions) {
+    const detalleFactura = this.factura.detalle;
+    const item = detalleFactura.find(item => item.producto.id === producto.id);
+    if (item) {
+      item.cantidad++;
+      item.subtotal = item.cantidad * item.producto.precio;
+    } else {
+      detalleFactura.push({ producto: producto, cantidad: 1, subtotal: producto.precio });
+    }
+
+    this.factura.total = detalleFactura.map(item => item.subtotal).reduce((a, b) => a + b);
   }
 
 }
