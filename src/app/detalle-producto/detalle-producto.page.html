@@ -50,7 +50,7 @@
 
         <ion-item>
           <ion-label position="stacked">Grupo:</ion-label>
-          <ion-select required formControlName="grupo" interface="popover">
+          <ion-select required formControlName="grupo" interface="action-sheet">
             <ion-select-option *ngFor="let grupo of grupos" [value]="grupo">{{grupo.nombre}}</ion-select-option>
           </ion-select>
         </ion-item>

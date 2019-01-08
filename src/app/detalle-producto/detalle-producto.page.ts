@@ -224,14 +224,4 @@ export class DetalleProductoPage implements OnInit {
     return await this.loading.present();
   }
 
-  async presentLoadingTrasnparent() {
-    this.loading = await this.loadingCtrl.create({
-      message: 'Procesando...',
-      spinner: 'crescent',
-      translucent: true,
-      showBackdrop: true
-    });
-    return await this.loading.present();
-  }
-
 }
