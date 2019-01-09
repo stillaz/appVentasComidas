@@ -14,7 +14,11 @@ export class VentaPage implements OnInit {
   }
 
   public venta() {
-    this.navCtrl.navigateForward('detalle-venta');
+    this.navCtrl.navigateForward('/tabs/venta/detalle');
+  }
+
+  public reporte() {
+    this.navCtrl.navigateForward('/tabs/venta/reporte');
   }
 
 }

@@ -4,8 +4,10 @@ import { GrupoOptions } from '../grupo-options';
 import { ProductoOptions } from '../producto-options';
 import { VentaOptions } from '../venta-options';
 import { EstadoVenta } from '../estado-venta.enum';
-import { AlertController, NavController, ToastController } from '@ionic/angular';
+import { AlertController, NavController, ToastController, Platform } from '@ionic/angular';
 import * as moment from 'moment';
+import { Printer, PrintOptions } from '@ionic-native/printer/ngx';
+import { UsuarioService } from '../usuario.service';
 
 @Component({
   selector: 'app-detalle-venta',
@@ -24,7 +26,10 @@ export class DetalleVentaPage implements OnInit {
     private angularFirestore: AngularFirestore,
     public alertController: AlertController,
     public navController: NavController,
-    public toastController: ToastController
+    public toastController: ToastController,
+    private printer: Printer,
+    public platform: Platform,
+    private usuarioService: UsuarioService
   ) { }
 
   ngOnInit() {
@@ -46,9 +51,11 @@ export class DetalleVentaPage implements OnInit {
       id: null,
       pago: null,
       total: 0,
+      recibido: 0,
       estado: EstadoVenta.PENDIENTE,
       turno: null,
-      fecha: null
+      fecha: null,
+      usuario: this.usuarioService.usuario
     };
 
     this.loadVenta().then(id => {
@@ -155,11 +162,12 @@ export class DetalleVentaPage implements OnInit {
         handler: data => {
           const pago = data.pago;
           this.venta.pago = pago;
-          const diferencia = pago - this.venta.total;
-          if (diferencia > 0) {
+          const devuelta = pago - this.venta.total;
+          this.venta.devuelta = devuelta;
+          this.venta.recibido = pago - devuelta;
+          if (devuelta > 0) {
             this.presentAlertDevolucion();
-          } else if (diferencia === 0) {
-            this.venta.devuelta = 0;
+          } else if (devuelta === 0) {
             this.finalizar();
           }
         }
@@ -172,9 +180,7 @@ export class DetalleVentaPage implements OnInit {
   }
 
   async presentAlertDevolucion() {
-    const devuelta = this.venta.pago - this.venta.total;
-    this.venta.devuelta = devuelta;
-    const devolucion = devuelta.toLocaleString('en-US', {
+    const devolucion = this.venta.devuelta.toLocaleString('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0
@@ -196,22 +202,82 @@ export class DetalleVentaPage implements OnInit {
   private finalizar() {
     this.loadTurno().then(idturno => {
       const fecha = new Date();
-      const ventaId = this.venta.id;
       const batch = this.angularFirestore.firestore.batch();
-      const ventaDoc = this.angularFirestore.doc('ventas/' + ventaId);
-      const turnoDoc = this.angularFirestore.doc('configuracion/turno');
-      const ventaDDoc = this.angularFirestore.doc('configuracion/venta');
       this.venta.turno = idturno;
       this.venta.estado = EstadoVenta.PAGADO;
       this.venta.fecha = fecha;
+      this.registrarVenta(batch, fecha);
+    });
+  }
+
+  private registrarVenta(batch: firebase.firestore.WriteBatch, fecha: Date) {
+    const recibido = this.venta.recibido;
+    const fechaDia = moment(fecha).startOf('day').toDate().getTime().toString();
+    const ventaDiaDoc = this.angularFirestore.doc<any>(`ventas/${fechaDia}`);
+    const ventaDoc = ventaDiaDoc.collection('ventas').doc(this.venta.id.toString());
+    ventaDiaDoc.ref.get().then(diario => {
+      if (diario.exists) {
+        const totalActual = diario.get('total');
+        const total = Number(totalActual) + recibido;
+        const cantidadActual = diario.get('cantidad');
+        const cantidad = Number(cantidadActual) + 1;
+        batch.update(ventaDiaDoc.ref, {
+          total: total,
+          cantidad: cantidad,
+          fecha: fecha
+        });
+      } else {
+        batch.set(ventaDiaDoc.ref, {
+          total: recibido,
+          cantidad: 1,
+          fecha: fecha
+        });
+      }
+      console.log(this.venta);
       batch.set(ventaDoc.ref, this.venta);
-      batch.update(turnoDoc.ref, { id: idturno, actualizacion: fecha });
-      batch.update(ventaDDoc.ref, { id: ventaId, actualizacion: fecha });
-      batch.commit().then(() => {
-        this.presentAlertFinalizar();
-      }).catch(err => {
-        this.presentAlertError(err, 'registrar');
-      });
+      this.registrarReporte(batch, fecha);
+    });
+  }
+
+  private registrarReporte(batch: firebase.firestore.WriteBatch, fecha: Date) {
+    const recibido = this.venta.recibido;
+    const fechaMes = moment(fecha).startOf('month').toDate().getTime().toString();
+    const reporteDoc = this.angularFirestore.doc(`reportes/${fechaMes}`);
+    const usuarioReporteDoc = reporteDoc.collection('ventas').doc(this.venta.usuario.id);
+    batch.set(reporteDoc.ref, { fecha: fecha });
+
+    usuarioReporteDoc.ref.get().then(reporte => {
+      if (reporte.exists) {
+        const totalActual = reporte.get('total');
+        const total = Number(totalActual) + recibido;
+        const cantidadActual = reporte.get('cantidad');
+        const cantidad = Number(cantidadActual) + 1;
+        batch.update(usuarioReporteDoc.ref, {
+          total: total,
+          cantidad: cantidad,
+          fecha: fecha
+        });
+      } else {
+        batch.set(usuarioReporteDoc.ref, {
+          total: recibido,
+          cantidad: 1,
+          fecha: fecha
+        });
+      }
+
+      this.updateIDS(batch, fecha);
+    });
+  }
+
+  private updateIDS(batch: firebase.firestore.WriteBatch, fecha: Date) {
+    const turnoDoc = this.angularFirestore.doc('configuracion/turno');
+    const ventaDDoc = this.angularFirestore.doc('configuracion/venta');
+    batch.update(turnoDoc.ref, { id: this.venta.turno, actualizacion: fecha });
+    batch.update(ventaDDoc.ref, { id: this.venta.id, actualizacion: fecha });
+    batch.commit().then(() => {
+      this.presentAlertFinalizar();
+    }).catch(err => {
+      this.presentAlertError(err, 'registrar');
     });
   }
 
@@ -240,31 +306,32 @@ export class DetalleVentaPage implements OnInit {
       buttons: [{
         text: 'Continuar',
         handler: () => {
-          this.presentToast('Se ha registrado la venta');
+          this.imprimir();
         }
       }]
     });
     return await alert.present();
   }
 
-  async presentToast(mensaje: string) {
-    const toast = await this.toastController.create({
-      message: mensaje,
-      duration: 3000
-    });
-    toast.present();
+  private imprimir() {
+    const documento = this.loadDocument();
+    if (this.platform.is('cordova')) {
+      this.printer.isAvailable().then(() => {
+        const options: PrintOptions = {
+          name: 'venta' + this.venta.id,
+          printerId: 'printer007',
+          duplex: true,
+          landscape: true,
+          grayscale: true
+        };
 
-    this.navController.goBack(true);
-  }
-
-  async presentAlertError(err: any, tipo: string) {
-    const alert = await this.alertController.create({
-      header: 'Ha ocurrido un error',
-      subHeader: `Se presentó un error al ${tipo} la venta.`,
-      message: `Error: ${err}`
-    });
-
-    alert.present();
+        this.printer.print(documento, options).then(() => {
+          this.presentToast('Se ha registrado la venta');
+        }).catch(err => { return err });
+      }).catch(err => this.presentAlertError(err, 'imprimir'));
+    } else {
+      this.presentToast('Se ha registrado la venta');
+    }
   }
 
   private loadDocument() {
@@ -290,7 +357,7 @@ export class DetalleVentaPage implements OnInit {
       documento += '<tr>' +
         `<td> ${item.producto.nombre} </td>` +
         `<td align="right"> ${item.cantidad} </td>` +
-        `<td align="right"> $' ${item.producto.precio} </td>` +
+        `<td align="right"> $ ${item.producto.precio} </td>` +
         `<td align="right"> $ ${item.subtotal} </td>` +
         '</tr>';
     });
@@ -303,8 +370,30 @@ export class DetalleVentaPage implements OnInit {
       '<tr>' +
       `<td colspan="4" align="right"><strong>Devuelta: $</strong> ${this.venta.devuelta} </td>` +
       '</tr>' +
-      '</table>';
+      '</table>' +
+      `<div style="width: 100%; text-align: center">Turno: ${this.venta.turno}</div>`;
     return documento;
+  }
+
+  async presentToast(mensaje: string) {
+    const toast = await this.toastController.create({
+      message: mensaje,
+      duration: 3000
+    });
+    toast.present();
+
+    this.navController.goBack(true);
+  }
+
+  async presentAlertError(err: any, tipo: string) {
+    const alert = await this.alertController.create({
+      header: 'Ha ocurrido un error',
+      subHeader: `Se presentó un error al ${tipo} la venta.`,
+      message: `Error: ${err}`,
+      buttons: ['OK']
+    });
+
+    alert.present();
   }
 
 }

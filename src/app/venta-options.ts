@@ -1,4 +1,5 @@
 import { ProductoOptions } from "./producto-options";
+import { UsuarioOptions } from "./usuario-options";
 
 export interface VentaOptions {
     id: number,
@@ -12,5 +13,7 @@ export interface VentaOptions {
     }],
     total: number,
     pago: number,
-    devuelta: number
+    devuelta: number,
+    recibido: number,
+    usuario: UsuarioOptions
 }

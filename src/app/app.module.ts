@@ -11,11 +11,12 @@ import { AppComponent } from './app.component';
 import { FirebaseConfig } from './config-firebase';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
-import { DetalleProductoPageModule } from './detalle-producto/detalle-producto.module';
 import { PipesModule } from './pipes.module';
 import { Camera } from '@ionic-native/camera/ngx';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { File } from '@ionic-native/file/ngx';
+import { Printer } from '@ionic-native/printer/ngx';
+import { AngularFireAuthModule } from '@angular/fire/auth';
 
 @NgModule({
   declarations: [AppComponent],
@@ -24,15 +25,16 @@ import { File } from '@ionic-native/file/ngx';
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
+    AngularFireAuthModule,
     AngularFireModule.initializeApp(FirebaseConfig),
     AngularFirestoreModule.enablePersistence(),
     AngularFireStorageModule,
-    DetalleProductoPageModule,
     PipesModule
   ],
   providers: [
     Camera,
     File,
+    Printer,
     StatusBar,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }

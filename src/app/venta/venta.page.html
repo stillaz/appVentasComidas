@@ -7,8 +7,18 @@
 <ion-content padding>
   <ion-list>
     <ion-item (click)="venta()">
-      <ion-icon name="add-circle" slot="end"></ion-icon>
+      <ion-icon name="add-circle" slot="start"></ion-icon>
       <ion-label>Nueva venta</ion-label>
+    </ion-item>
+
+    <ion-item (click)="reporte()">
+      <ion-icon name="list-box" slot="start"></ion-icon>
+      <ion-label>Registro de ventas</ion-label>
+    </ion-item>
+
+    <ion-item (click)="venta()">
+      <ion-icon name="stats" slot="start"></ion-icon>
+      <ion-label>Estadísticas</ion-label>
     </ion-item>
   </ion-list>
 </ion-content>

@@ -148,7 +148,8 @@ export class DetalleProductoPage implements OnInit {
     const alert = await this.alertCtrl.create({
       header: 'Ha ocurrido un error',
       subHeader: `Se presentó un error al ${tipo} el producto.`,
-      message: `Error: ${err}`
+      message: `Error: ${err}`,
+      buttons: ['OK']
     });
 
     alert.present();

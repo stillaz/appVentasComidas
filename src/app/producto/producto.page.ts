@@ -3,7 +3,6 @@ import { NavController, ModalController, PopoverController, ActionSheetControlle
 import { ProductoOptions } from '../producto-options';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { DetalleProductoPage } from '../detalle-producto/detalle-producto.page';
-import { DetallePrecioProductoPage } from '../detalle-precio-producto/detalle-precio-producto.page';
 import { GrupoOptions } from '../grupo-options';
 
 @Component({
@@ -100,14 +99,6 @@ export class ProductoPage implements OnInit {
 
   openPage(page: any) {
     this.navCtrl.navigateForward(page.component);
-  }
-
-  async verPrecio(idproducto: string) {
-    const modal = await this.modalCtrl.create({
-      component: DetallePrecioProductoPage,
-      componentProps: { idproducto: idproducto }
-    });
-    await modal.present();
   }
 
 }

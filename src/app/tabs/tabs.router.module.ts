@@ -10,30 +10,24 @@ const routes: Routes = [
     children: [
       {
         path: 'producto',
-        children: [
-          {
-            path: '',
-            loadChildren: '../producto/producto.module#ProductoPageModule'
-          }
-        ]
+        loadChildren: '../producto/producto.module#ProductoPageModule'
       },
       {
         path: 'venta',
-        children: [
-          {
-            path: '',
-            loadChildren: '../venta/venta.module#VentaPageModule'
-          }
-        ]
+        children: [{
+          path: 'detalle',
+          loadChildren: '../detalle-venta/detalle-venta.module#DetalleVentaPageModule'
+        }, {
+          path: 'reporte',
+          loadChildren: '../reporte/reporte.module#ReportePageModule'
+        }, {
+          path: '',
+          loadChildren: '../venta/venta.module#VentaPageModule'
+        }]
       },
       {
         path: 'configuracion',
-        children: [
-          {
-            path: '',
-            loadChildren: '../configuracion/configuracion.module#ConfiguracionPageModule'
-          }
-        ]
+        loadChildren: '../configuracion/configuracion.module#ConfiguracionPageModule'
       },
       {
         path: '',
