@@ -15,10 +15,120 @@
 
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+
     <ion-title>Registro de ventas</ion-title>
+    <ion-grid [ngSwitch]="periocidad">
+      <ion-row *ngSwitchCase="'MENSUAL'">
+        <ion-col size="1" offset="4">
+          <ion-button fill="clear" (click)="updateFechaMes(-1)" *ngIf="atras">
+            <ion-icon slot="icon-only" name="arrow-dropleft"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col size="2">
+          <ion-select fill="clear" style="text-align: center; font-weight: bolder;" interface="action-sheet"
+            [(ngModel)]="mesSeleccionado" #C (ionChange)="updateSeleccionadoMes(C.value)">
+            <ion-select-option *ngFor="let fecha of fechas" [value]="fecha">{{fecha.texto}}</ion-select-option>
+          </ion-select>
+        </ion-col>
+        <ion-col size="1">
+          <ion-button fill="clear" (click)="updateFechaMes(1)" *ngIf="adelante">
+            <ion-icon slot="icon-only" name="arrow-dropright"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+
+      <ion-row *ngSwitchCase="'DIARIO'">
+        <ion-col>
+          <ionic-calendar-date-picker (onSelect)="updateSeleccionadosDia($event)" [date]="fecha" [fromDate]="minDate"
+            [toDate]="maxDate" [monthLabels]="monthLabels" [dayLabels]="dayLabels"></ionic-calendar-date-picker>
+        </ion-col>
+      </ion-row>
+
+      <ion-row style="width: 70%; margin: auto;" *ngSwitchCase="'SEMANAL'">
+        <ion-col col-1>
+          <ion-buttons start>
+            <button ion-button icon-left (click)="updateFechaSemana(-1)" *ngIf="atras">
+              <ion-icon name="arrow-dropleft"></ion-icon>
+            </button>
+          </ion-buttons>
+        </ion-col>
+        <ion-col col-10>
+          <ion-label style="width: 100%; max-width: 100%; text-align: center; color: #ffffff; font-weight: bolder;">{{textoSemana}}</ion-label>
+        </ion-col>
+        <ion-col col-1>
+          <ion-buttons end>
+            <button ion-button icon-right (click)="updateFechaSemana(1)" *ngIf="adelante">
+              <ion-icon name="arrow-dropright"></ion-icon>
+            </button>
+          </ion-buttons>
+        </ion-col>
+      </ion-row>
+
+      <ion-row style="width: 70%; margin: auto;" *ngSwitchCase="'ANUAL'">
+        <ion-col col-1>
+          <ion-buttons start>
+            <button ion-button icon-left (click)="updateFechaAno(-1)" *ngIf="atras">
+              <ion-icon name="arrow-dropleft"></ion-icon>
+            </button>
+          </ion-buttons>
+        </ion-col>
+        <ion-col col-10>
+          <ion-label style="width: 100%; max-width: 100%; text-align: center; color: #ffffff; font-weight: bolder;">{{textoAno}}</ion-label>
+        </ion-col>
+        <ion-col col-1>
+          <ion-buttons end>
+            <button ion-button icon-right (click)="updateFechaAno(1)" *ngIf="adelante">
+              <ion-icon name="arrow-dropright"></ion-icon>
+            </button>
+          </ion-buttons>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
+  <ion-list *ngIf="reporte">
+    <ion-row>
+      <ion-col>
+        <ion-item style="text-align: center">
+          <p>Total ventas</p>
+          <h2 style="color: #32db64; margin-left: 5px;">{{ reporte.total | currency:'USD':'symbol':'4.0' }}</h2>
+        </ion-item>
+      </ion-col>
 
+      <ion-col>
+        <ion-item style="text-align: center">
+          <p>Cantidad ventas</p>
+          <h2 style="color: #32db64; margin-left: 5px;">{{reporte.cantidad}}</h2>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-item *ngFor="let detalle of reporte.detalle" (tap)="ver(detalle.usuario.id)">
+      <ion-avatar item-start *ngIf="detalle.usuario.imagen">
+        <img [src]="detalle.usuario.imagen">
+      </ion-avatar>
+      <ion-grid>
+        <ion-row>
+          <ion-col style="text-align: left">
+            <h2>{{detalle.usuario.nombre}}</h2>
+          </ion-col>
+
+          <ion-col style="text-align: right; color: #f53d3d">
+            <h2>{{detalle.total | currency:'USD':'symbol':'4.0'}}</h2>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col style="text-align: right">
+            <p>Ventas: {{detalle.cantidad}}</p>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+  </ion-list>
 </ion-content>

@@ -97,8 +97,4 @@ export class ProductoPage implements OnInit {
     await modal.present();
   }
 
-  openPage(page: any) {
-    this.navCtrl.navigateForward(page.component);
-  }
-
 }

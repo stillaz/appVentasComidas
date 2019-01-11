@@ -7,7 +7,7 @@ import { isNumber } from 'util';
 export class UdpCurrencyPipe implements PipeTransform {
 
   transform(value: any): any {
-    if (value === undefined) {
+    if (value === null || value === undefined) {
       return null;
     }
     const res = isNumber(value) ? value : parseInt(value.replace(/[^\d]/g, ""));

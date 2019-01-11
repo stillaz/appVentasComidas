@@ -67,7 +67,7 @@ export class DetalleProductoPage implements OnInit {
 
   private form() {
     this.todo = this.formBuilder.group({
-      id: [this.producto.id, Validators.required, this.valorUnico()],
+      id: [{value: this.producto.id, disabled: this.id}, Validators.required, this.valorUnico()],
       nombre: [this.producto.nombre, Validators.required],
       descripcion: [this.producto.descripcion, Validators.required],
       grupo: [this.producto.grupo, Validators.required],

@@ -55,7 +55,7 @@ export class DetalleVentaPage implements OnInit {
       estado: EstadoVenta.PENDIENTE,
       turno: null,
       fecha: null,
-      usuario: this.usuarioService.usuario
+      usuario: this.usuarioService.getUsuario()
     };
 
     this.loadVenta().then(id => {
@@ -233,7 +233,6 @@ export class DetalleVentaPage implements OnInit {
           fecha: fecha
         });
       }
-      console.log(this.venta);
       batch.set(ventaDoc.ref, this.venta);
       this.registrarReporte(batch, fecha);
     });
@@ -243,7 +242,8 @@ export class DetalleVentaPage implements OnInit {
     const recibido = this.venta.recibido;
     const fechaMes = moment(fecha).startOf('month').toDate().getTime().toString();
     const reporteDoc = this.angularFirestore.doc(`reportes/${fechaMes}`);
-    const usuarioReporteDoc = reporteDoc.collection('ventas').doc(this.venta.usuario.id);
+    const usuario = this.venta.usuario;
+    const usuarioReporteDoc = reporteDoc.collection('ventas').doc(usuario.id);
     batch.set(reporteDoc.ref, { fecha: fecha });
 
     usuarioReporteDoc.ref.get().then(reporte => {
@@ -261,7 +261,8 @@ export class DetalleVentaPage implements OnInit {
         batch.set(usuarioReporteDoc.ref, {
           total: recibido,
           cantidad: 1,
-          fecha: fecha
+          fecha: fecha,
+          usuario: usuario
         });
       }
 

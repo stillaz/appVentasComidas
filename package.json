@@ -40,6 +40,7 @@
     "core-js": "^2.5.4",
     "firebase": "^5.7.2",
     "ionic-angular": "^3.9.2",
+    "ionic4-date-picker": "0.0.8",
     "moment": "^2.23.0",
     "rxjs": "~6.3.3",
     "zone.js": "~0.8.26"

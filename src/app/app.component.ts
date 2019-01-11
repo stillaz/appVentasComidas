@@ -39,7 +39,8 @@ export class AppComponent {
         const usuarioDoc = this.angularFirestore.doc<UsuarioOptions>('usuarios/' + user.uid);
         usuarioDoc.valueChanges().subscribe(data => {
           if (data) {
-            this.usuarioService.usuario = data;
+            this.usuarioService.setUsuario(data);
+            this.navController.navigateRoot('tabs/producto');
           } else {
             alert('Usuario no encontrado');
           }

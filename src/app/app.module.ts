@@ -17,6 +17,8 @@ import { AngularFireStorageModule } from '@angular/fire/storage';
 import { File } from '@ionic-native/file/ngx';
 import { Printer } from '@ionic-native/printer/ngx';
 import { AngularFireAuthModule } from '@angular/fire/auth';
+import { DetalleProductoPageModule } from './detalle-producto/detalle-producto.module';
+import { DatePickerModule } from 'ionic4-date-picker';
 
 @NgModule({
   declarations: [AppComponent],
@@ -29,6 +31,8 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
     AngularFireModule.initializeApp(FirebaseConfig),
     AngularFirestoreModule.enablePersistence(),
     AngularFireStorageModule,
+    DatePickerModule,
+    DetalleProductoPageModule,
     PipesModule
   ],
   providers: [

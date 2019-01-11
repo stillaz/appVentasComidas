@@ -6,9 +6,17 @@ import { UsuarioOptions } from './usuario-options';
 })
 export class UsuarioService {
 
-  public usuario: UsuarioOptions;
+  private usuario: UsuarioOptions;
 
   constructor() { }
+
+  setUsuario(usuario: UsuarioOptions) {
+    this.usuario = usuario;
+  }
+
+  getUsuario() {
+    return this.usuario;
+  }
 
   isAdministrador() {
     return this.usuario ? this.usuario.perfiles.some(perfil => perfil.nombre === 'Administrador') : false;
