@@ -3,6 +3,8 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import * as moment from 'moment';
 import { VentaOptions } from '../venta-options';
 import { ReporteOptions } from '../reporte-options';
+import { ModalController } from '@ionic/angular';
+import { CalendarioPage } from '../calendario/calendario.page';
 
 @Component({
   selector: 'app-reporte',
@@ -22,6 +24,7 @@ export class ReportePage implements OnInit {
   public periocidad: string;
   public atras: boolean;
   public adelante: boolean;
+  public fecha: Date;
   public fechas: [{
     fecha: Date,
     texto: string
@@ -29,11 +32,15 @@ export class ReportePage implements OnInit {
   public mesSeleccionado: {
     fecha: Date,
     texto: string
-  }
+  };
 
-  constructor(private angularFirestore: AngularFirestore) { }
+  constructor(
+    private angularFirestore: AngularFirestore,
+    public modalController: ModalController
+  ) { }
 
   ngOnInit() {
+    this.fecha = new Date();
     this.updateFechaMes(0);
     this.updateReporte('MENSUAL');
   }
@@ -63,13 +70,32 @@ export class ReportePage implements OnInit {
     }
   }
 
-  updateSeleccionadoMes(seleccionado: {
+  public updateSeleccionadoMes(seleccionado: {
     fecha: Date,
     texto: string
   }) {
     this.adelante = moment(new Date()).diff(seleccionado.fecha, "month") !== 0;
     this.atras = moment(seleccionado.fecha).get("month") !== 1;
     this.updateReporteMensual(seleccionado.fecha);
+  }
+
+  public seleccionarFecha() {
+    this.presentModalCalendario();
+  }
+
+  private async presentModalCalendario() {
+    const modal = await this.modalController.create({
+      component: CalendarioPage
+    });
+
+    modal.onDidDismiss().then(res => {
+      const data = res.data;
+      if (data) {
+        this.fecha = data.fecha;
+      }
+    });
+
+    await modal.present();
   }
 
   public updateReporte(filtro: string) {

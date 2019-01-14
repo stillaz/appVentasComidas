@@ -41,9 +41,11 @@
       </ion-row>
 
       <ion-row *ngSwitchCase="'DIARIO'">
-        <ion-col>
-          <ionic-calendar-date-picker (onSelect)="updateSeleccionadosDia($event)" [date]="fecha" [fromDate]="minDate"
-            [toDate]="maxDate" [monthLabels]="monthLabels" [dayLabels]="dayLabels"></ionic-calendar-date-picker>
+        <ion-col class="center">
+          <ion-button fill="clear" (click)="seleccionarFecha()">
+            <ion-icon name="calendar" slot="start"></ion-icon>
+            {{fecha | date: 'fullDate' }}
+          </ion-button>
         </ion-col>
       </ion-row>
 
@@ -100,7 +102,7 @@
           </ion-text>
 
           <ion-text color="danger" class="left">
-            <h2>{{ reporte.total | currency:'USD':'symbol':'4.0' }}</h2>
+            <h2>{{ reporte.total | currency:'COP':'symbol':'4.0' }}</h2>
           </ion-text>
         </ion-item>
       </ion-col>
@@ -124,7 +126,7 @@
       <ion-text color="medium"><strong style="color: #000000">{{detalle.usuario.nombre}}</strong><br />
         Ventas: {{detalle.cantidad}}
       </ion-text>
-      <ion-text color="danger" slot="end"><strong>{{detalle.total | currency:'USD':'symbol':'4.0'}}</strong></ion-text>
+      <ion-text color="danger" slot="end"><strong>{{detalle.total | currency:'COP':'symbol':'4.0'}}</strong></ion-text>
     </ion-item>
   </ion-list>
 </ion-content>

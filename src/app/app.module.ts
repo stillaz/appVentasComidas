@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
@@ -19,6 +19,11 @@ import { Printer } from '@ionic-native/printer/ngx';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { DetalleProductoPageModule } from './detalle-producto/detalle-producto.module';
 import { DatePickerModule } from 'ionic4-date-picker';
+import { CalendarioPageModule } from './calendario/calendario.module';
+import localeEsCO from '@angular/common/locales/es-CO';
+import { registerLocaleData } from '@angular/common';
+
+registerLocaleData(localeEsCO);
 
 @NgModule({
   declarations: [AppComponent],
@@ -31,6 +36,7 @@ import { DatePickerModule } from 'ionic4-date-picker';
     AngularFireModule.initializeApp(FirebaseConfig),
     AngularFirestoreModule.enablePersistence(),
     AngularFireStorageModule,
+    CalendarioPageModule,
     DatePickerModule,
     DetalleProductoPageModule,
     PipesModule
@@ -41,7 +47,8 @@ import { DatePickerModule } from 'ionic4-date-picker';
     Printer,
     StatusBar,
     SplashScreen,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: LOCALE_ID, useValue: 'es-CO' }
   ],
   bootstrap: [AppComponent]
 })
