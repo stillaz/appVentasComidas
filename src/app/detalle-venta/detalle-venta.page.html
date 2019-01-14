@@ -75,7 +75,7 @@
         </ion-list>
 
         <ion-button [disabled]="!venta.detalle[0]" expand="block" color="secondary" (click)="terminar()">Finalizar</ion-button>
-        <ion-button expand="block" color="danger">Cancelar</ion-button>
+        <ion-button expand="block" color="danger" (click)="cancelar()">Cancelar</ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>

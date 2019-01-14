@@ -160,20 +160,14 @@ export class ReportePage implements OnInit {
       this.iniciarReporte();
       ventasUsuario.forEach(venta => {
         this.reporte.cantidad += venta.cantidad;
-        this.reporte.total += venta.recibido;
+        this.reporte.total += venta.total;
         const detalleReporte = this.reporte.detalle;
         const usuarioVenta = venta.usuario;
-        const reporteUsuario = detalleReporte.find(reporte => reporte.usuario.id === usuarioVenta.id);
-        if (reporteUsuario) {
-          reporteUsuario.cantidad += venta.cantidad;
-          reporteUsuario.total += venta.recibido;
-        } else {
-          detalleReporte.push({
-            cantidad: 1,
-            total: venta.recibido,
-            usuario: usuarioVenta
-          });
-        }
+        detalleReporte.push({
+          cantidad: venta.cantidad,
+          total: venta.total,
+          usuario: usuarioVenta
+        });
       });
     });
   }

@@ -94,16 +94,25 @@
   <ion-list *ngIf="reporte">
     <ion-row>
       <ion-col>
-        <ion-item style="text-align: center">
-          <p>Total ventas</p>
-          <h2 style="color: #32db64; margin-left: 5px;">{{ reporte.total | currency:'USD':'symbol':'4.0' }}</h2>
+        <ion-item>
+          <ion-text color="dark" class="center">
+            <h2>Total ventas: </h2>
+          </ion-text>
+
+          <ion-text color="danger" class="left">
+            <h2>{{ reporte.total | currency:'USD':'symbol':'4.0' }}</h2>
+          </ion-text>
         </ion-item>
       </ion-col>
 
       <ion-col>
-        <ion-item style="text-align: center">
-          <p>Cantidad ventas</p>
-          <h2 style="color: #32db64; margin-left: 5px;">{{reporte.cantidad}}</h2>
+        <ion-item>
+          <ion-text color="dark" class="center">
+            <h2>Cantidad ventas: </h2>
+          </ion-text>
+          <ion-text color="success" class="left">
+            <h2>{{reporte.cantidad}}</h2>
+          </ion-text>
         </ion-item>
       </ion-col>
     </ion-row>
@@ -112,23 +121,10 @@
       <ion-avatar item-start *ngIf="detalle.usuario.imagen">
         <img [src]="detalle.usuario.imagen">
       </ion-avatar>
-      <ion-grid>
-        <ion-row>
-          <ion-col style="text-align: left">
-            <h2>{{detalle.usuario.nombre}}</h2>
-          </ion-col>
-
-          <ion-col style="text-align: right; color: #f53d3d">
-            <h2>{{detalle.total | currency:'USD':'symbol':'4.0'}}</h2>
-          </ion-col>
-        </ion-row>
-
-        <ion-row>
-          <ion-col style="text-align: right">
-            <p>Ventas: {{detalle.cantidad}}</p>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+      <ion-text color="medium"><strong style="color: #000000">{{detalle.usuario.nombre}}</strong><br />
+        Ventas: {{detalle.cantidad}}
+      </ion-text>
+      <ion-text color="danger" slot="end"><strong>{{detalle.total | currency:'USD':'symbol':'4.0'}}</strong></ion-text>
     </ion-item>
   </ion-list>
 </ion-content>

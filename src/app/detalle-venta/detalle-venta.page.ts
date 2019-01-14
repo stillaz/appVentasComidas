@@ -386,6 +386,27 @@ export class DetalleVentaPage implements OnInit {
     this.navController.goBack(true);
   }
 
+  public cancelar() {
+    this.presentAlertCancelar();
+  }
+
+  async presentAlertCancelar() {
+    const alert = await this.alertController.create({
+      header: 'Cancelar venta',
+      subHeader: `Desea cancelar la venta ${this.venta.id}`,
+      buttons: [{
+        text: 'Si',
+        handler: () => {
+          this.navController.goBack(true);
+        }
+      }, {
+        text: 'No',
+        role: 'cancel'
+      }]
+    });
+    return await alert.present();
+  }
+
   async presentAlertError(err: any, tipo: string) {
     const alert = await this.alertController.create({
       header: 'Ha ocurrido un error',
