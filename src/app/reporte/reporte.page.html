@@ -22,21 +22,11 @@
     <ion-title>Registro de ventas</ion-title>
     <ion-grid [ngSwitch]="periocidad">
       <ion-row *ngSwitchCase="'MENSUAL'">
-        <ion-col size="1" offset="4">
-          <ion-button fill="clear" (click)="updateFechaMes(-1)" *ngIf="atras">
-            <ion-icon slot="icon-only" name="arrow-dropleft"></ion-icon>
-          </ion-button>
-        </ion-col>
-        <ion-col size="2">
-          <ion-select fill="clear" style="text-align: center; font-weight: bolder;" interface="action-sheet"
-            [(ngModel)]="mesSeleccionado" #C (ionChange)="updateSeleccionadoMes(C.value)">
+        <ion-col class="center">
+          <ion-select fill="clear" style="color: #3880ff;" interface="action-sheet" [interfaceOptions]="customActionSheetOptions"
+            [(ngModel)]="mesSeleccionado" #C (ionChange)="seleccionarMes(C.value)">
             <ion-select-option *ngFor="let fecha of fechas" [value]="fecha">{{fecha.texto}}</ion-select-option>
           </ion-select>
-        </ion-col>
-        <ion-col size="1">
-          <ion-button fill="clear" (click)="updateFechaMes(1)" *ngIf="adelante">
-            <ion-icon slot="icon-only" name="arrow-dropright"></ion-icon>
-          </ion-button>
         </ion-col>
       </ion-row>
 
@@ -49,42 +39,30 @@
         </ion-col>
       </ion-row>
 
-      <ion-row style="width: 70%; margin: auto;" *ngSwitchCase="'SEMANAL'">
-        <ion-col col-1>
-          <ion-buttons start>
-            <button ion-button icon-left (click)="updateFechaSemana(-1)" *ngIf="atras">
-              <ion-icon name="arrow-dropleft"></ion-icon>
-            </button>
-          </ion-buttons>
-        </ion-col>
-        <ion-col col-10>
-          <ion-label style="width: 100%; max-width: 100%; text-align: center; color: #ffffff; font-weight: bolder;">{{textoSemana}}</ion-label>
-        </ion-col>
-        <ion-col col-1>
-          <ion-buttons end>
-            <button ion-button icon-right (click)="updateFechaSemana(1)" *ngIf="adelante">
-              <ion-icon name="arrow-dropright"></ion-icon>
-            </button>
+      <ion-row *ngSwitchCase="'SEMANAL'">
+        <ion-col class="center" offset="4">
+          <ion-buttons>
+            <ion-button color="primary" (click)="seleccionarSemana(-1)" [disabled]="!atras">
+              <ion-icon slot="icon-only" name="arrow-dropleft"></ion-icon>
+            </ion-button>
+            <ion-text color="medium">{{semana}}</ion-text>
+            <ion-button color="primary" (click)="seleccionarSemana(1)" [disabled]="!adelante">
+              <ion-icon slot="icon-only" name="arrow-dropright"></ion-icon>
+            </ion-button>
           </ion-buttons>
         </ion-col>
       </ion-row>
 
-      <ion-row style="width: 70%; margin: auto;" *ngSwitchCase="'ANUAL'">
-        <ion-col col-1>
+      <ion-row *ngSwitchCase="'ANUAL'">
+        <ion-col class="center" offset="5">
           <ion-buttons start>
-            <button ion-button icon-left (click)="updateFechaAno(-1)" *ngIf="atras">
+            <ion-button color="primary" (click)="seleccionarAnno(-1)" [disabled]="!atras">
               <ion-icon name="arrow-dropleft"></ion-icon>
-            </button>
-          </ion-buttons>
-        </ion-col>
-        <ion-col col-10>
-          <ion-label style="width: 100%; max-width: 100%; text-align: center; color: #ffffff; font-weight: bolder;">{{textoAno}}</ion-label>
-        </ion-col>
-        <ion-col col-1>
-          <ion-buttons end>
-            <button ion-button icon-right (click)="updateFechaAno(1)" *ngIf="adelante">
-              <ion-icon name="arrow-dropright"></ion-icon>
-            </button>
+            </ion-button>
+            <ion-text color="medium">{{anno}}</ion-text>
+            <ion-button color="primary" (click)="seleccionarAnno(1)" [disabled]="!adelante">
+              <ion-icon slot="icon-only" name="arrow-dropright"></ion-icon>
+            </ion-button>
           </ion-buttons>
         </ion-col>
       </ion-row>
@@ -119,7 +97,7 @@
       </ion-col>
     </ion-row>
 
-    <ion-item *ngFor="let detalle of reporte.detalle" (tap)="ver(detalle.usuario.id)">
+    <ion-item *ngFor="let detalle of reporte.detalle" (click)="ver(detalle.usuario.id)">
       <ion-avatar item-start *ngIf="detalle.usuario.imagen">
         <img [src]="detalle.usuario.imagen">
       </ion-avatar>

@@ -5,17 +5,21 @@
 </ion-header>
 
 <ion-content padding>
-  <ionic-calendar-date-picker (onSelect)="seleccionar($event)" [date]="fecha" [fromDate]="minDate" [toDate]="maxDate"
+  <ionic-calendar-date-picker (onSelect)="seleccionar($event)" [date]="fecha" [toDate]="max"
     [monthLabels]="monthLabels" [dayLabels]="dayLabels"></ionic-calendar-date-picker>
 </ion-content>
 
 <ion-footer>
-  <ion-buttons>
-    <ion-button (click)="continuar()">
-      OK
-    </ion-button>
-    <ion-button (click)="cancelar()">
-      Cancelar
-    </ion-button>
-  </ion-buttons>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button color="primary" (click)="continuar()">
+        <ion-icon slot="start" name="checkmark"></ion-icon>
+        OK
+      </ion-button>
+      <ion-button color="danger" (click)="cancelar()">
+        <ion-icon slot="start" name="close"></ion-icon>
+        Cancelar
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
 </ion-footer>

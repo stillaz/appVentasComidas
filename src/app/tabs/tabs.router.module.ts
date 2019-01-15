@@ -11,15 +11,22 @@ const routes: Routes = [
       {
         path: 'producto',
         loadChildren: '../producto/producto.module#ProductoPageModule'
-      },
-      {
+      }, {
         path: 'venta',
         children: [{
           path: 'detalle',
           loadChildren: '../detalle-venta/detalle-venta.module#DetalleVentaPageModule'
         }, {
           path: 'reporte',
-          loadChildren: '../reporte/reporte.module#ReportePageModule'
+          children: [
+            {
+              path: '',
+              loadChildren: '../reporte/reporte.module#ReportePageModule'
+            }, {
+              path: 'detalle',
+              loadChildren: '../detalle-reporte/detalle-reporte.module#DetalleReportePageModule'
+            }
+          ]
         }, {
           path: '',
           loadChildren: '../venta/venta.module#VentaPageModule'

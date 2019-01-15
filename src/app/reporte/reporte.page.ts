@@ -3,7 +3,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import * as moment from 'moment';
 import { VentaOptions } from '../venta-options';
 import { ReporteOptions } from '../reporte-options';
-import { ModalController } from '@ionic/angular';
+import { ModalController, MenuController, NavController } from '@ionic/angular';
 import { CalendarioPage } from '../calendario/calendario.page';
 
 @Component({
@@ -21,9 +21,11 @@ export class ReportePage implements OnInit {
   ];
 
   public reporte: ReporteOptions;
-  public periocidad: string;
-  public atras: boolean;
   public adelante: boolean;
+  public atras = true;
+  public anno: string;
+  public periocidad: string;
+  public semana: string;
   public fecha: Date;
   public fechas: [{
     fecha: Date,
@@ -33,25 +35,28 @@ export class ReportePage implements OnInit {
     fecha: Date,
     texto: string
   };
+  public customActionSheetOptions = {
+    cssClass: 'actionMes'
+  }
 
   constructor(
     private angularFirestore: AngularFirestore,
-    public modalController: ModalController
+    public modalController: ModalController,
+    private menuController: MenuController,
+    public navController: NavController
   ) { }
 
   ngOnInit() {
     this.fecha = new Date();
-    this.updateFechaMes(0);
+    this.updateFechasMes(new Date());
     this.updateReporte('MENSUAL');
   }
 
-  public updateFechaMes(valor: number) {
-    const fecha = this.mesSeleccionado ? this.mesSeleccionado.fecha : new Date();
-    const fechaNueva = moment(fecha).add(valor, 'month').toDate();
-    this.updateFechasMes(fechaNueva);
-    this.adelante = moment(new Date()).diff(this.mesSeleccionado.fecha, "month") !== 0;
-    this.atras = moment(this.mesSeleccionado.fecha).get("month") !== 1;
-    this.updateReporte('MENSUAL');
+  public ver(idusuario: string) {
+    this.navController.navigateForward(['tabs/venta/reporte/detalle', {
+      idusuario: idusuario,
+      fecha: this.fecha.getTime().toString()
+    }]);
   }
 
   public updateFechasMes(fechaSeleccionada: Date) {
@@ -70,12 +75,7 @@ export class ReportePage implements OnInit {
     }
   }
 
-  public updateSeleccionadoMes(seleccionado: {
-    fecha: Date,
-    texto: string
-  }) {
-    this.adelante = moment(new Date()).diff(seleccionado.fecha, "month") !== 0;
-    this.atras = moment(seleccionado.fecha).get("month") !== 1;
+  public seleccionarMes(seleccionado: any) {
     this.updateReporteMensual(seleccionado.fecha);
   }
 
@@ -83,15 +83,41 @@ export class ReportePage implements OnInit {
     this.presentModalCalendario();
   }
 
+  public seleccionarSemana(valor: number) {
+    const diaSemana = moment(this.fecha).add(valor, 'week');
+    const fechaInicio = diaSemana.startOf('week').add(1, 'day').toDate();
+    const fechaFin = diaSemana.endOf('week').add(1, 'day').toDate();
+    const textoInicio = moment(fechaInicio).locale('es').format('[Del] DD ');
+    const textoFin = moment(fechaFin).locale('es').format('[al] DD [de] MMMM [de] YYYY');
+    this.semana = `${textoInicio} ${textoFin}`.toLocaleUpperCase();
+    this.adelante = fechaFin < new Date();
+    this.fecha = fechaInicio;
+    this.updateReporteSemanal(fechaInicio, fechaFin);
+  }
+
+  public seleccionarAnno(valor: number) {
+    const anno = moment(this.fecha).add(valor, 'year');
+    const fechaInicio = anno.startOf('month').toDate();
+    const fechaFin = anno.endOf('month').toDate();
+    this.anno = anno.year().toString();
+    this.adelante = fechaFin < new Date();
+    this.fecha = fechaInicio;
+    this.updateReporteAnual(fechaInicio, fechaFin);
+  }
+
   private async presentModalCalendario() {
     const modal = await this.modalController.create({
-      component: CalendarioPage
+      component: CalendarioPage,
+      componentProps: {
+        fecha: this.fecha
+      }
     });
 
     modal.onDidDismiss().then(res => {
       const data = res.data;
       if (data) {
         this.fecha = data.fecha;
+        this.updateReporteDiario(this.fecha);
       }
     });
 
@@ -99,19 +125,21 @@ export class ReportePage implements OnInit {
   }
 
   public updateReporte(filtro: string) {
+    this.menuController.close();
+    this.fecha = new Date();
     this.periocidad = filtro;
     switch (filtro) {
       case 'DIARIO':
-        this.updateReporteDiario(new Date());
+        this.updateReporteDiario(this.fecha);
         break;
       case 'SEMANAL':
-        this.updateReporteSemanal(new Date(), new Date());
+        this.seleccionarSemana(0);
         break;
       case 'MENSUAL':
-        this.updateReporteMensual(new Date());
+        this.updateReporteMensual(this.fecha);
         break;
       case 'ANUAL':
-        this.updateReporteAnual(new Date(), new Date());
+        this.seleccionarAnno(0);
         break;
     }
   }
@@ -205,20 +233,13 @@ export class ReportePage implements OnInit {
       const promise = this.loadReporteFechaMes(fecha).then(ventas => {
         ventas.forEach(venta => {
           this.reporte.cantidad += venta.cantidad;
-          this.reporte.total += venta.recibido;
+          this.reporte.total += venta.total;
           const detalleReporte = this.reporte.detalle;
-          const usuarioVenta = venta.usuario;
-          const reporteUsuario = detalleReporte.find(reporte => reporte.usuario.id === usuarioVenta.id);
-          if (reporteUsuario) {
-            reporteUsuario.cantidad += venta.cantidad;
-            reporteUsuario.total += venta.recibido;
-          } else {
-            detalleReporte.push({
-              cantidad: 1,
-              total: venta.recibido,
-              usuario: usuarioVenta
-            });
-          }
+          detalleReporte.push({
+            cantidad: venta.cantidad,
+            total: venta.total,
+            usuario: venta.usuario
+          });
         });
       });
       await promise;
@@ -229,7 +250,7 @@ export class ReportePage implements OnInit {
   private async loadReporteFechaMes(fecha: Date) {
     const idFecha = moment(fecha).startOf('month').toDate().getTime();
     return new Promise<any[]>(resolve => {
-      const ventasDiaCollection = this.angularFirestore.collection<any>(`reportes/${idFecha}`);
+      const ventasDiaCollection = this.angularFirestore.collection<any>(`reportes/${idFecha}/ventas`);
       ventasDiaCollection.valueChanges().subscribe(ventas => {
         resolve(ventas);
       });
