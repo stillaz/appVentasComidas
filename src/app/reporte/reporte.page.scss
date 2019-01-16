@@ -1,14 +1,28 @@
-h2{
-    font-size: 18px;
-    font-weight: bold;
-}
-
 .center{
     width: 100%;
     text-align: center;
 }
 
-.left{
-    width: 100%;
-    text-align: start;
+.sc-ion-buttons-md-h{
+    display: block;
+}
+
+.danger{
+    color: #f04141;
+}
+
+.success{
+    color: #10dc60;
+}
+
+ion-select{
+    color: #3880ff;
+}
+
+.black{
+    color: #222428;
+}
+
+ion-text strong{
+    font-size: 20px;
 }

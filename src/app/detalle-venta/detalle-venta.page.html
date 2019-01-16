@@ -34,7 +34,7 @@
                     </ion-card-header>
                     <ion-card-content style="text-align: right; padding: 0;">
                       <img [src]="producto.imagen">
-                      <strong style="margin-right: 10px;">{{producto.precio | currency : USD: symbol: '4.0' }}</strong>
+                      <strong style="margin-right: 10px;">{{producto.precio | currency : 'COP': 'symbol' }}</strong>
                     </ion-card-content>
                   </ion-card>
                 </ion-col>
@@ -45,10 +45,10 @@
       </ion-col>
 
       <ion-col size="3">
-        <ion-list style="height: 550px; overflow: auto;">
+        <ion-list style="height: 600px; overflow: auto;">
           <ion-list-header>
             <h2><b>Venta N° {{venta.id}}</b></h2>
-            <h2><b style="color: #910000">Total: {{venta.total | currency : USD: symbol: '4.0'}}</b></h2>
+            <h2><b style="color: #910000">Total: {{venta.total | currency : 'COP': 'symbol'}}</b></h2>
           </ion-list-header>
 
           <ion-grid>
@@ -62,7 +62,7 @@
               </ion-col>
 
               <ion-col size="2" style="padding-left: 0; padding-right: 0px;">
-                <ion-label>{{item.subtotal | currency : USD: symbol: '4.0'}}</ion-label>
+                <ion-label>{{item.subtotal | currency : 'COP': 'symbol'}}</ion-label>
               </ion-col>
 
               <ion-col size="2">

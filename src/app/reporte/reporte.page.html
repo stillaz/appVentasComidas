@@ -20,91 +20,77 @@
     </ion-buttons>
 
     <ion-title>Registro de ventas</ion-title>
-    <ion-grid [ngSwitch]="periocidad">
-      <ion-row *ngSwitchCase="'MENSUAL'">
-        <ion-col class="center">
-          <ion-select fill="clear" style="color: #3880ff;" interface="action-sheet" [interfaceOptions]="customActionSheetOptions"
-            [(ngModel)]="mesSeleccionado" #C (ionChange)="seleccionarMes(C.value)">
-            <ion-select-option *ngFor="let fecha of fechas" [value]="fecha">{{fecha.texto}}</ion-select-option>
-          </ion-select>
-        </ion-col>
-      </ion-row>
+  </ion-toolbar>
 
-      <ion-row *ngSwitchCase="'DIARIO'">
-        <ion-col class="center">
-          <ion-button fill="clear" (click)="seleccionarFecha()">
-            <ion-icon name="calendar" slot="start"></ion-icon>
-            {{fecha | date: 'fullDate' }}
-          </ion-button>
-        </ion-col>
-      </ion-row>
+  <ion-toolbar [ngSwitch]="periocidad" class="center">
+    <ion-select *ngSwitchCase="'MENSUAL'" fill="clear" interface="action-sheet" [interfaceOptions]="customActionSheetOptions"
+      [(ngModel)]="mesSeleccionado" #C (ionChange)="seleccionarMes(C.value)">
+      <ion-select-option *ngFor="let fecha of fechas" [value]="fecha">{{fecha.texto}}</ion-select-option>
+    </ion-select>
 
-      <ion-row *ngSwitchCase="'SEMANAL'">
-        <ion-col class="center" offset="4">
-          <ion-buttons>
-            <ion-button color="primary" (click)="seleccionarSemana(-1)" [disabled]="!atras">
-              <ion-icon slot="icon-only" name="arrow-dropleft"></ion-icon>
-            </ion-button>
-            <ion-text color="medium">{{semana}}</ion-text>
-            <ion-button color="primary" (click)="seleccionarSemana(1)" [disabled]="!adelante">
-              <ion-icon slot="icon-only" name="arrow-dropright"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-col>
-      </ion-row>
+    <ion-button *ngSwitchCase="'DIARIO'" fill="clear" (click)="seleccionarFecha()">
+      <ion-icon name="calendar" slot="start"></ion-icon>
+      {{fecha | date: 'fullDate' }}
+    </ion-button>
 
-      <ion-row *ngSwitchCase="'ANUAL'">
-        <ion-col class="center" offset="5">
-          <ion-buttons start>
-            <ion-button color="primary" (click)="seleccionarAnno(-1)" [disabled]="!atras">
-              <ion-icon name="arrow-dropleft"></ion-icon>
-            </ion-button>
-            <ion-text color="medium">{{anno}}</ion-text>
-            <ion-button color="primary" (click)="seleccionarAnno(1)" [disabled]="!adelante">
-              <ion-icon slot="icon-only" name="arrow-dropright"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+    <ion-buttons *ngSwitchCase="'SEMANAL'">
+      <ion-button color="primary" (click)="seleccionarSemana(-1)" [disabled]="!atras">
+        <ion-icon slot="icon-only" name="arrow-dropleft"></ion-icon>
+      </ion-button>
+      <ion-text color="medium">{{semana}}</ion-text>
+      <ion-button color="primary" (click)="seleccionarSemana(1)" [disabled]="!adelante">
+        <ion-icon slot="icon-only" name="arrow-dropright"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-buttons *ngSwitchCase="'ANUAL'">
+      <ion-button color="primary" (click)="seleccionarAnno(-1)" [disabled]="!atras">
+        <ion-icon name="arrow-dropleft"></ion-icon>
+      </ion-button>
+      <ion-text color="medium">{{anno}}</ion-text>
+      <ion-button color="primary" (click)="seleccionarAnno(1)" [disabled]="!adelante">
+        <ion-icon slot="icon-only" name="arrow-dropright"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content>
   <ion-list *ngIf="reporte">
-    <ion-row>
-      <ion-col>
-        <ion-item>
-          <ion-text color="dark" class="center">
-            <h2>Total ventas: </h2>
-          </ion-text>
+    <ion-list-header>
+      <ion-grid style="width: 100%;">
+        <ion-row>
+          <ion-col>
+            <ion-item>
+              <ion-text color="dark" class="center">
+                <p>Total ventas: </p>
+                <h2 style="color: #10dc60">{{ reporte.total | currency:'COP':'symbol' }}</h2>
+              </ion-text>
+            </ion-item>
+          </ion-col>
 
-          <ion-text color="danger" class="left">
-            <h2>{{ reporte.total | currency:'COP':'symbol':'4.0' }}</h2>
-          </ion-text>
-        </ion-item>
-      </ion-col>
-
-      <ion-col>
-        <ion-item>
-          <ion-text color="dark" class="center">
-            <h2>Cantidad ventas: </h2>
-          </ion-text>
-          <ion-text color="success" class="left">
-            <h2>{{reporte.cantidad}}</h2>
-          </ion-text>
-        </ion-item>
-      </ion-col>
-    </ion-row>
+          <ion-col>
+            <ion-item>
+              <ion-text color="dark" class="center">
+                <p>Cantidad ventas: </p>
+                <h2 style="color: #0cd1e8">{{reporte.cantidad}}</h2>
+              </ion-text>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-list-header>
 
     <ion-item *ngFor="let detalle of reporte.detalle" (click)="ver(detalle.usuario.id)">
       <ion-avatar item-start *ngIf="detalle.usuario.imagen">
         <img [src]="detalle.usuario.imagen">
       </ion-avatar>
-      <ion-text color="medium"><strong style="color: #000000">{{detalle.usuario.nombre}}</strong><br />
+      <ion-text color="medium"><strong class="black">{{detalle.usuario.nombre}}</strong><br />
         Ventas: {{detalle.cantidad}}
       </ion-text>
-      <ion-text color="danger" slot="end"><strong>{{detalle.total | currency:'COP':'symbol':'4.0'}}</strong></ion-text>
+      <ion-text color="danger" slot="end">
+        <h2>{{detalle.total | currency:'COP':'symbol'}}</h2>
+      </ion-text>
     </ion-item>
   </ion-list>
 </ion-content>

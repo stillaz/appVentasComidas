@@ -37,7 +37,7 @@ export class ReportePage implements OnInit {
   };
   public customActionSheetOptions = {
     cssClass: 'actionMes'
-  }
+  };
 
   constructor(
     private angularFirestore: AngularFirestore,
