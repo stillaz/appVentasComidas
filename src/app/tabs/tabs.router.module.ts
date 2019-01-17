@@ -34,7 +34,16 @@ const routes: Routes = [
       },
       {
         path: 'configuracion',
-        loadChildren: '../configuracion/configuracion.module#ConfiguracionPageModule'
+        children: [{
+          path: '',
+          loadChildren: '../configuracion/configuracion.module#ConfiguracionPageModule'
+        }, {
+          path: 'grupo',
+          loadChildren: '../grupo/grupo.module#GrupoPageModule'
+        }, {
+          path: 'usuario',
+          loadChildren: '../detalle-usuario/detalle-usuario.module#DetalleUsuarioPageModule'
+        }]
       },
       {
         path: '',

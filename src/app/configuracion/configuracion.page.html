@@ -1,9 +1,25 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>configuracion</ion-title>
+    <ion-title>Configuración</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
+  <ion-list>
+    <ion-item (click)="ir('grupo')">
+      <ion-icon slot="start" name="albums"></ion-icon>
 
+      <ion-text>
+        Grupos
+      </ion-text>
+    </ion-item>
+
+    <ion-item (click)="ir('usuario')">
+      <ion-icon slot="start" name="person"></ion-icon>
+      
+      <ion-text>
+        Perfil
+      </ion-text>
+    </ion-item>
+  </ion-list>
 </ion-content>

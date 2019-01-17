@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+
+
+    <ion-title>Grupos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list *ngFor="let grupo of grupos">
+    <ion-item (click)="ver(grupo.id)">
+      <ion-avatar slot="start" *ngIf="grupo.imagen">
+        <img [src]="grupo.imagen" />
+      </ion-avatar>
+
+      <h2>{{grupo.nombre}}</h2>
+    </ion-item>
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="primary" (click)="ver()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

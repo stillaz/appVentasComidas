@@ -127,7 +127,7 @@ export class DetalleProductoPage implements OnInit {
       }).catch(err => {
         this.presentAlertError(err, 'registrar');
         this.loading.dismiss();
-      });;
+      });
     }
   }
 
@@ -223,6 +223,36 @@ export class DetalleProductoPage implements OnInit {
       spinner: 'crescent',
     });
     return await this.loading.present();
+  }
+
+  public eliminar() {
+    this.presentAlertEliminar();
+  }
+
+  private async presentAlertEliminar() {
+    const alert = await this.alertCtrl.create({
+      header: 'Eliminar grupo',
+      message: `¿Está seguro de eliminar el grupo ${this.id}?`,
+      buttons: [{
+        text: 'Si',
+        handler: () => {
+          const productoDoc = this.productoCollection.doc(this.id);
+          this.presentLoading();
+          productoDoc.delete().then(() => {
+            this.presentToast('El producto ha sido eliminado');
+            this.loading.dismiss();
+          }).catch(err => {
+            this.presentAlertError(err, 'eliminar');
+            this.loading.dismiss();
+          });
+        }
+      }, {
+        text: 'No',
+        role: 'cancel'
+      }]
+    });
+
+    await alert.present();
   }
 
 }

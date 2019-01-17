@@ -5,7 +5,7 @@
 
     <ion-buttons slot="primary">
       <ion-button (click)="salir()">
-        <ion-icon name="md-close"></ion-icon>
+        <ion-icon name="close"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -61,8 +61,8 @@
 
         <ion-item>
           <ion-label position="stacked">Precio:</ion-label>
-          <input required inputmode="numeric" type="text" [value]="todo.get('precio').value | udpCurrency" formControlName="precio"
-            placeholder="$ 0">
+          <input required inputmode="numeric" type="text" [value]="todo.get('precio').value | udpCurrency"
+            formControlName="precio" placeholder="$ 0">
         </ion-item>
 
         <ion-item color="danger" *ngIf="todo.controls.precio.errors && todo.controls.precio.touched">
@@ -97,15 +97,24 @@
             </ion-fab-list>
           </ion-fab>
         </ion-item>
-
-        <ion-button type="submit" icon-right full large color="secondary" [disabled]="todo.invalid" (click)="guardar()">Guardar
-          <ion-icon name="checkmark"></ion-icon>
-        </ion-button>
-
-        <ion-button *ngIf="id" icon-right full large color="danger" (click)="eliminar()">Eliminar
-          <ion-icon name="trash"></ion-icon>
-        </ion-button>
       </form>
     </ion-card-content>
   </ion-card>
 </ion-content>
+
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button type="submit" fill="solid" color="secondary" [disabled]="!todo || todo.invalid" (click)="guardar()">
+        <ion-icon slot="start" name="checkmark"></ion-icon>
+        Guardar
+      </ion-button>
+
+      <ion-button *ngIf="id" fill="solid" color="danger" (click)="eliminar()">
+        <ion-icon slot="start" name="trash"></ion-icon>
+        Eliminar
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-configuracion',
@@ -7,9 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ConfiguracionPage implements OnInit {
 
-  constructor() { }
+  constructor(private navController: NavController) { }
 
   ngOnInit() {
+  }
+
+  public ir(page: string) {
+    this.navController.navigateForward(`tabs/configuracion/${page}`);
   }
 
 }

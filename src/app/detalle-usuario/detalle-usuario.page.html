@@ -1,0 +1,87 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+
+    <ion-title *ngIf="!usuario">Datos de usuario</ion-title>
+    <ion-title *ngIf="usuario">Datos de {{usuario.nombre}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-card *ngIf="todo">
+    <ion-card-content>
+      <form [formGroup]="todo">
+        <ion-item>
+          <ion-label floating>Email:</ion-label>
+          <ion-input type="email" formControlName="email" maxlength="50"></ion-input>
+          <ion-button slot="end" fill="outline" color="danger" (tap)="actualizarEmail()">Cambiar email</ion-button>
+        </ion-item>
+
+        <ion-item color="danger" *ngIf="todo.controls.email.errors && todo.controls.email.touched">
+          <p>El email no es válido</p>
+        </ion-item>
+
+        <ion-item>
+          <ion-label floating>Clave:</ion-label>
+          <ion-input type="password" formControlName="clave"></ion-input>
+          <ion-button slot="end" fill="outline" color="danger" (tap)="actualizarClave()">Cambiar clave</ion-button>
+        </ion-item>
+
+        <ion-item color="danger" *ngIf="todo.controls.clave.errors && todo.controls.clave.touched">
+          <p>La clave no es válida</p>
+        </ion-item>
+
+        <ion-item>
+          <ion-label floating>Teléfono:</ion-label>
+          <ion-input type="tel" formControlName="telefono" maxlength="10"></ion-input>
+        </ion-item>
+
+        <ion-item color="danger" *ngIf="todo.controls.telefono.errors && todo.controls.telefono.touched">
+          <p>El teléfono no es válido</p>
+        </ion-item>
+
+        <ion-item style="text-align: center" *ngIf="todo.controls.imagen.value">
+          <img [src]="todo.controls.imagen.value" style="max-width:300px;" />
+        </ion-item>
+
+        <ion-item *ngIf="!mobile && todo.controls.email.value">
+          <label class="item item-input"> <input type="file" id="upimgfile" name="uploadfile" (change)="seleccionarImagen($event)">
+          </label>
+        </ion-item>
+
+        <ion-item *ngIf="mobile && todo.controls.email.value">
+          <ion-fab vertical="bottom" horizontal="center">
+            <ion-fab-button size="small">
+              <ion-icon name="image"></ion-icon>
+            </ion-fab-button>
+
+            <ion-fab-list side="start">
+              <ion-fab-button (click)="sacarFoto()">
+                <ion-icon name="camera"></ion-icon>
+              </ion-fab-button>
+            </ion-fab-list>
+
+            <ion-fab-list side="end">
+              <ion-fab-button>
+                <ion-icon name="cloud-upload" (click)="cargarImagen()"></ion-icon>
+              </ion-fab-button>
+            </ion-fab-list>
+          </ion-fab>
+        </ion-item>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button type="submit" color="success" fill="solid" [disabled]="!todo || todo.invalid" (click)="guardar()">
+        <ion-icon name="checkmark" slot="start"></ion-icon>
+        Guardar
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

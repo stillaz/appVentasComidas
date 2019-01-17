@@ -22,6 +22,7 @@ import { DatePickerModule } from 'ionic4-date-picker';
 import { CalendarioPageModule } from './calendario/calendario.module';
 import localeEsCO from '@angular/common/locales/es-CO';
 import { registerLocaleData } from '@angular/common';
+import { DetalleGrupoPageModule } from './detalle-grupo/detalle-grupo.module';
 
 registerLocaleData(localeEsCO);
 
@@ -38,6 +39,7 @@ registerLocaleData(localeEsCO);
     AngularFireStorageModule,
     CalendarioPageModule,
     DatePickerModule,
+    DetalleGrupoPageModule,
     DetalleProductoPageModule,
     PipesModule
   ],
