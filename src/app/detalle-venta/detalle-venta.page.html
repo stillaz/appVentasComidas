@@ -32,7 +32,7 @@
                     <ion-card-header text-wrap>
                       {{producto.nombre}}
                     </ion-card-header>
-                    <ion-card-content style="text-align: right; padding: 0;">
+                    <ion-card-content style="text-align: right; padding: 0;" *ngIf="producto.imagen">
                       <img [src]="producto.imagen">
                       <ion-text color="tertiary">
                         <h2 style="margin: 10px; font-weight: bold;">{{producto.precio | currency : 'COP' : 'symbol' }}</h2>
