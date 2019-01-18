@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, LoadingController } from '@ionic/angular';
+import { NavController, LoadingController, ModalController } from '@ionic/angular';
 import * as moment from 'moment';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { VentaOptions } from '../venta-options';
 import { ActivatedRoute } from '@angular/router';
 import { UsuarioOptions } from '../usuario-options';
+import { DetalleReporteVentaPage } from '../detalle-reporte-venta/detalle-reporte-venta.page';
 
 @Component({
   selector: 'app-detalle-reporte',
@@ -19,6 +20,7 @@ export class DetalleReportePage implements OnInit {
   public reporte: {
     detalle: [{
       fecha: string,
+      total: number,
       ventas: VentaOptions[]
     }],
     cantidad: number,
@@ -41,7 +43,8 @@ export class DetalleReportePage implements OnInit {
     public navController: NavController,
     private angularFirestore: AngularFirestore,
     private activeRouter: ActivatedRoute,
-    public loadingController: LoadingController
+    public loadingController: LoadingController,
+    private modalController: ModalController
   ) { }
 
   ngOnInit() {
@@ -95,7 +98,7 @@ export class DetalleReportePage implements OnInit {
 
   private async updateVentasUsuario() {
     const fechaInicio = moment(this.fecha).startOf('month').toDate();
-    const fechaFin = moment(this.fecha).endOf('month').toDate();
+    const fechaFin = moment(this.fecha).endOf('month').startOf('day').toDate();
     const loading = await this.loadingController.create({
       message: 'Procesando...',
       duration: 2000,
@@ -104,30 +107,48 @@ export class DetalleReportePage implements OnInit {
     });
 
     loading.present();
-    let fecha = fechaInicio;
-    while (fecha <= fechaFin) {
-      const texto = moment(fecha).locale('es').format('dddd, DD')
+    let fecha = fechaFin;
+    while (fecha >= fechaInicio) {
+      const texto = moment(fecha).locale('es').format('dddd, DD');
       const promise = this.loadVentasDiaUsuario(fecha.getTime().toString()).then(ventas => {
         if (ventas[0]) {
-          this.reporte.detalle.push({ fecha: texto, ventas: ventas });
+          const totalDia = ventas.map(venta => venta.recibido).reduce((a, b) => a + b);
           this.reporte.cantidad += ventas.length;
-          this.reporte.total += ventas.map(venta => venta.recibido).reduce((a, b) => a + b);
+          this.reporte.total += totalDia;
+          this.reporte.detalle.push({ fecha: texto, total: totalDia, ventas: ventas });
         }
       });
       await promise;
-      fecha = moment(fecha).add(1, 'day').toDate();
+      fecha = moment(fecha).add(-1, 'day').toDate();
     }
 
     loading.dismiss();
   }
 
   private async loadVentasDiaUsuario(idfecha: string) {
-    const ventasDiaCollection = this.angularFirestore.collection<VentaOptions>(`ventas/${idfecha}/ventas`, ref => ref.where('usuario.id', '==', this.idusuario));
+    const ventasDiaCollection = this.angularFirestore.collection<VentaOptions>(`ventas/${idfecha}/ventas`, ref => ref.where('usuario.id', '==', this.idusuario).orderBy('fecha', 'desc'));
     return new Promise<VentaOptions[]>(resolve => {
       ventasDiaCollection.valueChanges().subscribe(ventas => {
         resolve(ventas);
       });
     });
+  }
+
+  public ver(idventa: string, fecha: Date) {
+    const idfecha = moment(fecha).startOf('day').toDate().getTime().toString();
+    this.presentModalVenta(idventa, idfecha);
+  }
+
+  private async presentModalVenta(idventa: string, fecha: string) {
+    const modal = await this.modalController.create({
+      component: DetalleReporteVentaPage,
+      componentProps: {
+        idventa: idventa,
+        fecha: fecha
+      }
+    });
+
+    await modal.present();
   }
 
 }

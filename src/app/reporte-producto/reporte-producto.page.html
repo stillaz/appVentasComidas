@@ -1,0 +1,95 @@
+<ion-menu side="start" menuId="first">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>Periocidad</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <ion-item *ngFor="let filtro of filtros" (click)="updateReporte(filtro)">{{filtro}}</ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<ion-router-outlet main></ion-router-outlet>
+
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Registro de productos vendidos</ion-title>
+  </ion-toolbar>
+
+  <ion-toolbar [ngSwitch]="periocidad" class="center">
+    <ion-select *ngSwitchCase="'MENSUAL'" fill="clear" interface="action-sheet" [interfaceOptions]="customActionSheetOptions"
+      [(ngModel)]="mesSeleccionado" #C (ionChange)="seleccionarMes(C.value)">
+      <ion-select-option *ngFor="let fecha of fechas" [value]="fecha">{{fecha.texto}}</ion-select-option>
+    </ion-select>
+
+    <ion-button *ngSwitchCase="'DIARIO'" fill="clear" (click)="seleccionarFecha()">
+      <ion-icon name="calendar" slot="start"></ion-icon>
+      {{fecha | date: 'fullDate' }}
+    </ion-button>
+
+    <ion-buttons *ngSwitchCase="'SEMANAL'">
+      <ion-button color="primary" (click)="seleccionarSemana(-1)" [disabled]="!atras">
+        <ion-icon slot="icon-only" name="arrow-dropleft"></ion-icon>
+      </ion-button>
+      <ion-text color="medium">{{semana}}</ion-text>
+      <ion-button color="primary" (click)="seleccionarSemana(1)" [disabled]="!adelante">
+        <ion-icon slot="icon-only" name="arrow-dropright"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-buttons *ngSwitchCase="'ANUAL'">
+      <ion-button color="primary" (click)="seleccionarAnno(-1)" [disabled]="!atras">
+        <ion-icon name="arrow-dropleft"></ion-icon>
+      </ion-button>
+      <ion-text color="medium">{{anno}}</ion-text>
+      <ion-button color="primary" (click)="seleccionarAnno(1)" [disabled]="!adelante">
+        <ion-icon slot="icon-only" name="arrow-dropright"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list *ngIf="reporte">
+    <ion-list-header>
+      <ion-grid style="width: 100%;">
+        <ion-row>
+          <ion-col>
+            <ion-item *ngIf="reporte.mayor && reporte.mayor.producto">
+              <ion-text color="dark" class="center">
+                <p>Más vendido</p>
+                <h2 style="color: #10dc60">{{ reporte.mayor.producto.nombre }}: {{reporte.mayor.cantidad}}</h2>
+              </ion-text>
+            </ion-item>
+          </ion-col>
+
+          <ion-col>
+            <ion-item *ngIf="reporte.menor && reporte.menor.producto">
+              <ion-text color="dark" class="center">
+                <p>Menos vendido</p>
+                <h2 style="color: #0cd1e8">{{ reporte.menor.producto.nombre }}: {{reporte.menor.cantidad}}</h2>
+              </ion-text>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-list-header>
+
+    <ion-item *ngFor="let detalle of reporte.detalle">
+      <ion-avatar slot="start" *ngIf="detalle.producto.imagen">
+        <img [src]="detalle.producto.imagen">
+      </ion-avatar>
+      <ion-text color="medium"><strong class="black">{{detalle.producto.nombre}}</strong>
+      </ion-text>
+      <ion-text color="danger" slot="end">
+        <h2>{{detalle.cantidad}}</h2>
+      </ion-text>
+    </ion-item>
+  </ion-list>
+</ion-content>

@@ -23,6 +23,7 @@ import { CalendarioPageModule } from './calendario/calendario.module';
 import localeEsCO from '@angular/common/locales/es-CO';
 import { registerLocaleData } from '@angular/common';
 import { DetalleGrupoPageModule } from './detalle-grupo/detalle-grupo.module';
+import { DetalleReporteVentaPageModule } from './detalle-reporte-venta/detalle-reporte-venta.module';
 
 registerLocaleData(localeEsCO);
 
@@ -41,6 +42,7 @@ registerLocaleData(localeEsCO);
     DatePickerModule,
     DetalleGrupoPageModule,
     DetalleProductoPageModule,
+    DetalleReporteVentaPageModule,
     PipesModule
   ],
   providers: [

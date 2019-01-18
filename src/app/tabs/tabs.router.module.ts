@@ -28,6 +28,9 @@ const routes: Routes = [
             }
           ]
         }, {
+          path: 'reporte-producto',
+          loadChildren: '../reporte-producto/reporte-producto.module#ReporteProductoPageModule'
+        }, {
           path: '',
           loadChildren: '../venta/venta.module#VentaPageModule'
         }]

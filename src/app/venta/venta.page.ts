@@ -13,12 +13,8 @@ export class VentaPage implements OnInit {
   ngOnInit() {
   }
 
-  public venta() {
-    this.navCtrl.navigateForward('/tabs/venta/detalle');
-  }
-
-  public reporte() {
-    this.navCtrl.navigateForward('/tabs/venta/reporte');
+  public ir(pagina: string) {
+    this.navCtrl.navigateForward(`/tabs/venta/${pagina}`);
   }
 
 }

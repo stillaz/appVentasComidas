@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Datos de la venta</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="salir()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list *ngIf="venta">
+    <ion-list-header>
+      <h2><b>Venta N° {{venta.id}}</b></h2>
+      <h2 style="color: #910000; margin-right: 5px;"><b>Total: {{venta.total | currency : 'COP': 'symbol'}}</b></h2>
+    </ion-list-header>
+
+    <ion-grid>
+      <ion-row *ngFor="let item of venta.detalle">
+        <ion-col size="1">
+          <ion-label>{{item.cantidad}}</ion-label>
+        </ion-col>
+
+        <ion-col size="8">
+          <ion-label>{{item.producto.nombre}}</ion-label>
+        </ion-col>
+
+        <ion-col size="3" style="text-align: right;">
+          <ion-label>{{item.subtotal | currency : 'COP': 'symbol'}}</ion-label>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <ion-item *ngIf="id">
+      <ion-text>
+        Pago: {{venta.pago | currency : 'COP': 'symbol'}}
+      </ion-text>
+    </ion-item>
+
+    <ion-item *ngIf="id">
+      <ion-text>
+        Devolución: {{venta.devuelta | currency : 'COP': 'symbol'}}
+      </ion-text>
+    </ion-item>
+  </ion-list>
+</ion-content>
