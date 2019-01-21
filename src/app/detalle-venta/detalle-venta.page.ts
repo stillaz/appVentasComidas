@@ -61,6 +61,10 @@ export class DetalleVentaPage implements OnInit {
     this.loadVenta().then(id => {
       this.venta.id = id;
     });
+
+    this.loadTurno().then(id => {
+      this.venta.turno = id;
+    })
   }
 
   private loadVenta() {
@@ -200,14 +204,11 @@ export class DetalleVentaPage implements OnInit {
   }
 
   private finalizar() {
-    this.loadTurno().then(idturno => {
-      const fecha = new Date();
-      const batch = this.angularFirestore.firestore.batch();
-      this.venta.turno = idturno;
-      this.venta.estado = EstadoVenta.PAGADO;
-      this.venta.fecha = fecha;
-      this.registrarVenta(batch, fecha);
-    });
+    const fecha = new Date();
+    const batch = this.angularFirestore.firestore.batch();
+    this.venta.estado = EstadoVenta.PAGADO;
+    this.venta.fecha = fecha;
+    this.registrarVenta(batch, fecha);
   }
 
   private registrarVenta(batch: firebase.firestore.WriteBatch, fecha: Date) {
